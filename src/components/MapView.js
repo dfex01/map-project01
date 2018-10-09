@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
+import uuid from 'uuid';
 
 class MapView extends Component {
 
@@ -30,7 +31,6 @@ class MapView extends Component {
         };
         const nextMarkers = [...this.state.markers, newMarker];
         this.setState({markers: nextMarkers});
-
     }
 
 
@@ -38,7 +38,7 @@ class MapView extends Component {
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
-                    key={mrkr.name} 
+                    key= {uuid.v1()}
                     onClick={this.onMarkerClick}
                     onMouseover={this.onMouseoverMarker} 
                     name={mrkr.name}
