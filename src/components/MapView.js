@@ -5,6 +5,9 @@ import uuid from 'uuid';
 class MapView extends Component {
 
     state = {
+        activeMarker: {},
+        showingInfoWindow: false,
+        selectedPlace: {},
         markers: [
             { 
                 name: 'start',
@@ -14,23 +17,37 @@ class MapView extends Component {
         ]
     }
 
-    onMarkerClick = (e) => {
-        console.log('[onMarkerClick]', e);
+    onMarkerClick = (props, marker, e) => {
+        console.log('[onMarkerClick]');
+        console.log(props);
+        this.setState({ 
+            activeMarker: marker, 
+            showingInfoWindow: true,
+            selectedPlace: props 
+        });
     }
 
     onMouseoverMarker = (e) => {
-        console.log('[onMouseoverMarker]', e);
+       // console.log('[onMouseoverMarker]', e);
     }
 
     onMapClicked = (map, click) => {
         console.log('[onMapClicked]');
-        const newMarker = {
-            name: 'New Marker',
-            lat: click.latLng.lat(),
-            lng: click.latLng.lng()
-        };
-        const nextMarkers = [...this.state.markers, newMarker];
-        this.setState({markers: nextMarkers});
+        if (this.state.showingInfoWindow) {
+            this.setState({
+              showingInfoWindow: false,
+              activeMarker: null
+            })  
+        }  else {
+            const newMarker = {
+                name: 'New Marker',
+                lat: click.latLng.lat(),
+                lng: click.latLng.lng()
+            };
+            const nextMarkers = [...this.state.markers, newMarker];
+            this.setState({markers: nextMarkers});
+        }  
+
     }
 
 
@@ -61,9 +78,12 @@ class MapView extends Component {
                 }} 
                 onClick={(t, map, c) => this.onMapClicked(map, c)}>
                 {markers}
-                <InfoWindow onClose={this.onInfoWindowClose}>
+                <InfoWindow
+                 onClose={this.onInfoWindowClose}
+                 marker={this.state.activeMarker}
+                 visible={this.state.showingInfoWindow}>
                     <div>
-                        {/* <h1>{this.state.selectedPlace.name}</h1> */}
+                        <h1>{this.state.selectedPlace.name}</h1>
                     </div>
                 </InfoWindow>
             </Map>
