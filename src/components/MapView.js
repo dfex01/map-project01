@@ -11,8 +11,11 @@ class MapView extends Component {
         console.log('[onMouseoverMarker]', e);
     }
 
-    onMapClicked = (e) => {
-        console.log('[onMapClicked]', e)
+    onMapClicked = (map, click) => {
+        console.log('[onMapClicked]');
+        const latitude = click.latLng.lat();
+        const longitude = click.latLng.lng();
+        console.log(latitude, longitude);
     }
 
 
@@ -26,7 +29,7 @@ class MapView extends Component {
                     lat: 33.83008972168741,
                     lng: -84.35267661111448 
                 }} 
-                onClick={this.onMapClicked}>
+                onClick={(t, map, c) => this.onMapClicked(map, c)}>
                 <Marker 
                     onClick={this.onMarkerClick}
                     onMouseover={this.onMouseoverMarker} 
