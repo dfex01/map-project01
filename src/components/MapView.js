@@ -38,7 +38,7 @@ class MapView extends Component {
               showingInfoWindow: false,
               activeMarker: null
             })  
-        }  else {
+        } else {
             const newMarker = {
                 name: 'New Marker',
                 lat: click.latLng.lat(),
