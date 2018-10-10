@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 import uuid from 'uuid';
 
+import MarkerEditor from './MarkerEditor';
+import Toolbar from './Toolbar';
+
 class MapView extends Component {
 
     state = {
@@ -11,15 +14,17 @@ class MapView extends Component {
         markers: [
             { 
                 name: 'start',
+                description: 'home sweet home',
                 lat: 33.83008972168741,
                 lng: -84.35267661111448
             }
-        ]
+        ],
+        editingMarker: false
     }
 
     onMarkerClick = (props, marker, e) => {
         console.log('[onMarkerClick]');
-        console.log(props);
+       // console.log(props);
         this.setState({ 
             activeMarker: marker, 
             showingInfoWindow: true,
@@ -41,17 +46,67 @@ class MapView extends Component {
         } else {
             const newMarker = {
                 name: 'New Marker',
+                description: 'This is a new marker :)',
                 lat: click.latLng.lat(),
                 lng: click.latLng.lng()
             };
             const nextMarkers = [...this.state.markers, newMarker];
             this.setState({markers: nextMarkers});
         }  
-
     }
 
+    editMarkerHandler = () => {
+        this.setState({ editingMarker: true });
+    }
+
+    finishEditHandler = () => {
+        this.setState({ editingMarker: false });
+    }
+
+    editNameHandler = (e) => {
+        let newPlace = {...this.state.selectedPlace};
+        newPlace.name = e.target.value;
+        this.state.markers.map(marker => {
+            if (marker.name === this.state.selectedPlace.name){
+                const index = this.state.markers.indexOf(marker);
+                let newMarkers = [...this.state.markers]
+                newMarkers[index].name = e.target.value;
+                this.setState({ markers: newMarkers });
+            } return null;
+        });
+        this.setState({ selectedPlace: newPlace });
+    }
+
+    editDescriptionHandler = (e) => {
+        let newPlace = {...this.state.selectedPlace}
+        newPlace.description = e.target.value;
+        this.state.markers.map(marker => {
+            if (marker.name === this.state.selectedPlace.name){
+                const index = this.state.markers.indexOf(marker);
+                let newMarkers = [...this.state.markers]
+                newMarkers[index].description = e.target.value;
+                this.setState({ markers: newMarkers });
+            } return null;
+        });
+        this.setState({ selectedPlace: newPlace });
+    }
+
+    removeMarkerHandler = () => {
+        this.state.markers.map(marker => {
+            if (marker.name === this.state.selectedPlace.name) {
+                const index = this.state.markers.indexOf(marker);
+                let newMarkers = [...this.state.markers];
+                newMarkers.splice(index, 1);
+                this.setState({ 
+                    markers: newMarkers,
+                    showingInfoWindow: false,
+                    editingMarker: false });
+            }
+        });
+    }
 
     render() {
+
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
@@ -59,6 +114,7 @@ class MapView extends Component {
                     onClick={this.onMarkerClick}
                     onMouseover={this.onMouseoverMarker} 
                     name={mrkr.name}
+                    description={mrkr.description}
                     position={{
                         lat: mrkr.lat,
                         lng: mrkr.lng 
@@ -67,26 +123,37 @@ class MapView extends Component {
         })
 
 
-
         return (
-            <Map 
-                google={this.props.google} 
-                zoom={8}
-                initialCenter={{
-                    lat: 33.83008972168741,
-                    lng: -84.35267661111448 
-                }} 
-                onClick={(t, map, c) => this.onMapClicked(map, c)}>
-                {markers}
-                <InfoWindow
-                 onClose={this.onInfoWindowClose}
-                 marker={this.state.activeMarker}
-                 visible={this.state.showingInfoWindow}>
-                    <div>
-                        <h1>{this.state.selectedPlace.name}</h1>
-                    </div>
-                </InfoWindow>
-            </Map>
+            <div>
+                <Toolbar click={this.editMarkerHandler} />
+                <MarkerEditor 
+                    showMarkerEditor={this.state.editingMarker} 
+                    close={this.finishEditHandler}
+                    place={this.state.selectedPlace} 
+                    marker={this.state.activeMarker} 
+                    editName={this.editNameHandler}
+                    editDescription={this.editDescriptionHandler}
+                    remove={this.removeMarkerHandler} />
+                <Map 
+                    google={this.props.google} 
+                    zoom={8}
+                    initialCenter={{
+                        lat: 33.83008972168741,
+                        lng: -84.35267661111448 
+                    }} 
+                    onClick={(t, map, c) => this.onMapClicked(map, c)}>
+                    {markers}
+                    <InfoWindow
+                    onClose={this.onInfoWindowClose}
+                    marker={this.state.activeMarker}
+                    visible={this.state.showingInfoWindow}>
+                        <div>
+                            <h1>{this.state.selectedPlace.name}</h1>
+                            <p>{this.state.selectedPlace.description}</p>
+                        </div>
+                    </InfoWindow>
+                </Map>
+            </div>
         );
     }
 }
