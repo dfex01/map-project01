@@ -17,6 +17,7 @@ class MarkerEditor extends Component {
                     <label>Tell your story about this location</label>
                     <input type="text" value={this.props.place.description} onChange={(e) => this.props.editDescription(e)} /><br />
 
+                    <button onClick={this.props.remove}>Remove this Marker</button>
                     <input type="submit" onClick={this.props.close} />
                 </div>
         );

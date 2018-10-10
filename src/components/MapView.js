@@ -91,6 +91,20 @@ class MapView extends Component {
         this.setState({ selectedPlace: newPlace });
     }
 
+    removeMarkerHandler = () => {
+        this.state.markers.map(marker => {
+            if (marker.name === this.state.selectedPlace.name) {
+                const index = this.state.markers.indexOf(marker);
+                let newMarkers = [...this.state.markers];
+                newMarkers.splice(index, 1);
+                this.setState({ 
+                    markers: newMarkers,
+                    showingInfoWindow: false,
+                    editingMarker: false });
+            }
+        });
+    }
+
     render() {
 
         const markers = this.state.markers.map(mrkr => {
@@ -118,7 +132,8 @@ class MapView extends Component {
                     place={this.state.selectedPlace} 
                     marker={this.state.activeMarker} 
                     editName={this.editNameHandler}
-                    editDescription={this.editDescriptionHandler} />
+                    editDescription={this.editDescriptionHandler}
+                    remove={this.removeMarkerHandler} />
                 <Map 
                     google={this.props.google} 
                     zoom={8}
