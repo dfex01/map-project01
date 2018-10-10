@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 import uuid from 'uuid';
+import MarkerEditor from './MarkerEditor';
 
 class MapView extends Component {
 
@@ -14,7 +15,8 @@ class MapView extends Component {
                 lat: 33.83008972168741,
                 lng: -84.35267661111448
             }
-        ]
+        ],
+        editingMarker: false
     }
 
     onMarkerClick = (props, marker, e) => {
@@ -50,6 +52,11 @@ class MapView extends Component {
 
     }
 
+    editMarkerHandler = () => {
+        console.log('click');
+        this.setState({ editingMarker: !this.state.editingMarker });
+    }
+
 
     render() {
         const markers = this.state.markers.map(mrkr => {
@@ -67,26 +74,31 @@ class MapView extends Component {
         })
 
 
+        const infoButton = <button onClick={this.editMarkerHandler}>edit</button>
 
         return (
-            <Map 
-                google={this.props.google} 
-                zoom={8}
-                initialCenter={{
-                    lat: 33.83008972168741,
-                    lng: -84.35267661111448 
-                }} 
-                onClick={(t, map, c) => this.onMapClicked(map, c)}>
-                {markers}
-                <InfoWindow
-                 onClose={this.onInfoWindowClose}
-                 marker={this.state.activeMarker}
-                 visible={this.state.showingInfoWindow}>
-                    <div>
-                        <h1>{this.state.selectedPlace.name}</h1>
-                    </div>
-                </InfoWindow>
-            </Map>
+            <div>
+                <MarkerEditor showMarkerEditor={this.state.editingMarker} />
+                <Map 
+                    google={this.props.google} 
+                    zoom={8}
+                    initialCenter={{
+                        lat: 33.83008972168741,
+                        lng: -84.35267661111448 
+                    }} 
+                    onClick={(t, map, c) => this.onMapClicked(map, c)}>
+                    {markers}
+                    <InfoWindow
+                    onClose={this.onInfoWindowClose}
+                    marker={this.state.activeMarker}
+                    visible={this.state.showingInfoWindow}>
+                        <div>
+                            <h1>{this.state.selectedPlace.name}</h1>
+                            {infoButton}
+                        </div>
+                    </InfoWindow>
+                </Map>
+            </div>
         );
     }
 }
