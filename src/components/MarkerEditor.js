@@ -12,18 +12,18 @@ class MarkerEditor extends Component {
                     <h1>Marker Editor</h1>
 
                     <label>Name this location</label>
-                    <input type="text" /><br />
+                    <input type="text" value={this.props.place.name} onChange={(e) => this.props.editName(e)} /><br />
 
                     <label>Tell your story about this location</label>
-                    <input type="text" /><br />
+                    <input type="text" value={this.props.place.description} onChange={(e) => this.props.editDescription(e)} /><br />
 
                     <input type="submit" onClick={this.props.close} />
                 </div>
         );
 
-        console.log(this.props);
-        console.log(this.props.marker);
-        console.log(this.props.place.name);
+        // console.log(this.props);
+        // console.log(this.props.marker);
+        // console.log(this.props.place.name);
 
 
         return (

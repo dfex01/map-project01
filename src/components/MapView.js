@@ -24,7 +24,7 @@ class MapView extends Component {
 
     onMarkerClick = (props, marker, e) => {
         console.log('[onMarkerClick]');
-        console.log(props);
+       // console.log(props);
         this.setState({ 
             activeMarker: marker, 
             showingInfoWindow: true,
@@ -56,7 +56,6 @@ class MapView extends Component {
     }
 
     editMarkerHandler = () => {
-        console.log('click');
         this.setState({ editingMarker: true });
     }
 
@@ -64,8 +63,36 @@ class MapView extends Component {
         this.setState({ editingMarker: false });
     }
 
+    editNameHandler = (e) => {
+        let newPlace = {...this.state.selectedPlace};
+        newPlace.name = e.target.value;
+        this.state.markers.map(marker => {
+            if (marker.name === this.state.selectedPlace.name){
+                const index = this.state.markers.indexOf(marker);
+                let newMarkers = [...this.state.markers]
+                newMarkers[index].name = e.target.value;
+                this.setState({ markers: newMarkers });
+            } return null;
+        });
+        this.setState({ selectedPlace: newPlace });
+    }
+
+    editDescriptionHandler = (e) => {
+        let newPlace = {...this.state.selectedPlace}
+        newPlace.description = e.target.value;
+        this.state.markers.map(marker => {
+            if (marker.name === this.state.selectedPlace.name){
+                const index = this.state.markers.indexOf(marker);
+                let newMarkers = [...this.state.markers]
+                newMarkers[index].description = e.target.value;
+                this.setState({ markers: newMarkers });
+            } return null;
+        });
+        this.setState({ selectedPlace: newPlace });
+    }
 
     render() {
+
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
@@ -89,7 +116,9 @@ class MapView extends Component {
                     showMarkerEditor={this.state.editingMarker} 
                     close={this.finishEditHandler}
                     place={this.state.selectedPlace} 
-                    marker={this.state.activeMarker} />
+                    marker={this.state.activeMarker} 
+                    editName={this.editNameHandler}
+                    editDescription={this.editDescriptionHandler} />
                 <Map 
                     google={this.props.google} 
                     zoom={8}
