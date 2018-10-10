@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 import uuid from 'uuid';
+
 import MarkerEditor from './MarkerEditor';
+import Toolbar from './Toolbar';
 
 class MapView extends Component {
 
@@ -12,6 +14,7 @@ class MapView extends Component {
         markers: [
             { 
                 name: 'start',
+                description: 'home sweet home',
                 lat: 33.83008972168741,
                 lng: -84.35267661111448
             }
@@ -43,18 +46,22 @@ class MapView extends Component {
         } else {
             const newMarker = {
                 name: 'New Marker',
+                description: 'This is a new marker :)',
                 lat: click.latLng.lat(),
                 lng: click.latLng.lng()
             };
             const nextMarkers = [...this.state.markers, newMarker];
             this.setState({markers: nextMarkers});
         }  
-
     }
 
     editMarkerHandler = () => {
         console.log('click');
-        this.setState({ editingMarker: !this.state.editingMarker });
+        this.setState({ editingMarker: true });
+    }
+
+    finishEditHandler = () => {
+        this.setState({ editingMarker: false });
     }
 
 
@@ -66,6 +73,7 @@ class MapView extends Component {
                     onClick={this.onMarkerClick}
                     onMouseover={this.onMouseoverMarker} 
                     name={mrkr.name}
+                    description={mrkr.description}
                     position={{
                         lat: mrkr.lat,
                         lng: mrkr.lng 
@@ -74,11 +82,14 @@ class MapView extends Component {
         })
 
 
-        const infoButton = <button onClick={this.editMarkerHandler}>edit</button>
-
         return (
             <div>
-                <MarkerEditor showMarkerEditor={this.state.editingMarker} />
+                <Toolbar click={this.editMarkerHandler} />
+                <MarkerEditor 
+                    showMarkerEditor={this.state.editingMarker} 
+                    close={this.finishEditHandler}
+                    place={this.state.selectedPlace} 
+                    marker={this.state.activeMarker} />
                 <Map 
                     google={this.props.google} 
                     zoom={8}
@@ -94,7 +105,7 @@ class MapView extends Component {
                     visible={this.state.showingInfoWindow}>
                         <div>
                             <h1>{this.state.selectedPlace.name}</h1>
-                            {infoButton}
+                            <p>{this.state.selectedPlace.description}</p>
                         </div>
                     </InfoWindow>
                 </Map>
