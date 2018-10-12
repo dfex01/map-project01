@@ -32,6 +32,12 @@ class MapView extends Component {
             showingInfoWindow: true,
             selectedPlace: props 
         });
+        const iwDiv = document.querySelector(".gm-style-iw");
+        if (iwDiv) {
+            iwDiv.previousSibling.children[3].setAttribute("id", "iw-outer-div");
+            iwDiv.previousSibling.children[2].children[1].children[0].setAttribute("class", "iwBase")
+            iwDiv.previousSibling.children[2].children[0].children[0].setAttribute("class", "iwBase")
+        }
     }
 
     onMouseoverMarker = (e) => {
@@ -39,12 +45,13 @@ class MapView extends Component {
     }
 
     onMapClicked = (map, click) => {
-        if (this.state.addingMarker === false) return null;
         if (this.state.showingInfoWindow) {
             this.setState({
               showingInfoWindow: false,
               activeMarker: null
             })  
+        } else if (this.state.addingMarker === false) {
+             return null;
         } else {
             const newMarker = {
                 name: 'New Marker',
@@ -163,7 +170,6 @@ class MapView extends Component {
                     }} 
                     onClick={(t, map, c) => this.onMapClicked(map, c)}>
                     {markers}
-                    <div className="InfoWindow">
                         <InfoWindow
                         onClose={this.onInfoWindowClose}
                         marker={this.state.activeMarker}
@@ -173,7 +179,6 @@ class MapView extends Component {
                                 <p>{this.state.selectedPlace.description}</p>
                             </div>
                         </InfoWindow>
-                    </div>
                 </Map>
             </div>
         );

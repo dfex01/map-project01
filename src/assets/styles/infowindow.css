@@ -1,3 +1,9 @@
-.InfoWindow {
-    background-color: yellow;
+
+#iw-outer-div {
+    background-color: #8ec3b9 !important;
+    border-radius: 5% !important;
+}
+
+.iwBase {
+    background-color: #8ec3b9 !important;  
 }
