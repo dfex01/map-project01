@@ -113,6 +113,13 @@ class MapView extends Component {
         this.setState({ selectedPlace: newPlace });
     }
 
+    keyPressHandler = (e) => {
+        if (e.charCode === 13) {
+            console.log('pressed enter');
+            this.finishEditHandler();
+        }
+    }
+
     removeMarkerHandler = () => {
         this.state.markers.map(marker => {
             if (marker.id === this.state.selectedPlace.id) {
@@ -163,7 +170,8 @@ class MapView extends Component {
                     marker={this.state.activeMarker} 
                     editName={this.editNameHandler}
                     editDescription={this.editDescriptionHandler}
-                    remove={this.removeMarkerHandler} />
+                    remove={this.removeMarkerHandler}
+                    keyPress={this.keyPressHandler} />
                 <Map
                     styles={mapStyle} 
                     google={this.props.google} 
@@ -186,6 +194,7 @@ class MapView extends Component {
                                         <p>{this.state.user.name}</p>
                                     </div>
                                     <div className="iw-details">
+                                        <p style={{fontWeight: "bold"}}>Story</p>
                                         <p>{this.state.selectedPlace.description}</p>
                                     </div>
                                 </div>
