@@ -142,7 +142,8 @@ class MapView extends Component {
             <div>
                 <Toolbar 
                     editMarker={this.editMarkerHandler}
-                    addMarker={this.addMarkerMode} />
+                    addMarker={this.addMarkerMode}
+                    removeMarker={this.removeMarkerHandler} />
                 <MarkerEditor
                     showMarkerEditor={this.state.editingMarker} 
                     close={this.finishEditHandler}
