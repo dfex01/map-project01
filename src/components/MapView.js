@@ -4,11 +4,12 @@ import uuid from 'uuid';
 
 import MarkerEditor from './MarkerEditor';
 import Toolbar from './Toolbar';
+import { mapStyle } from '../assets/mapStyle/mapStyle.js';
 
 class MapView extends Component {
 
     state = {
-        activeMarker: {},
+        activeMarker: null,
         showingInfoWindow: false,
         selectedPlace: {},
         markers: [
@@ -20,7 +21,8 @@ class MapView extends Component {
                 lng: -84.35267661111448
             }
         ],
-        editingMarker: false
+        editingMarker: false,
+        addingMarker: false
     }
 
     onMarkerClick = (props, marker, e) => {
@@ -36,6 +38,7 @@ class MapView extends Component {
     }
 
     onMapClicked = (map, click) => {
+        if (this.state.addingMarker === false) return null;
         if (this.state.showingInfoWindow) {
             this.setState({
               showingInfoWindow: false,
@@ -50,11 +53,19 @@ class MapView extends Component {
                 lng: click.latLng.lng()
             };
             const nextMarkers = [...this.state.markers, newMarker];
-            this.setState({markers: nextMarkers});
+            this.setState({markers: nextMarkers, addingMarker: false});
         }  
     }
 
+    onInfoWindowClose = () => {
+        this.setState({ 
+            activeMarker: null,
+            selectedPlace: {},
+            showingInfoWindow: false });
+    }
+
     editMarkerHandler = () => {
+        if (this.state.activeMarker == null) return null;
         this.setState({ editingMarker: true });
     }
 
@@ -104,6 +115,10 @@ class MapView extends Component {
         });
     }
 
+    addMarkerMode = () => {
+        this.setState({ addingMarker: true });
+    }
+
     render() {
 
         const markers = this.state.markers.map(mrkr => {
@@ -125,8 +140,10 @@ class MapView extends Component {
 
         return (
             <div>
-                <Toolbar click={this.editMarkerHandler} />
-                <MarkerEditor 
+                <Toolbar 
+                    editMarker={this.editMarkerHandler}
+                    addMarker={this.addMarkerMode} />
+                <MarkerEditor
                     showMarkerEditor={this.state.editingMarker} 
                     close={this.finishEditHandler}
                     place={this.state.selectedPlace} 
@@ -134,7 +151,8 @@ class MapView extends Component {
                     editName={this.editNameHandler}
                     editDescription={this.editDescriptionHandler}
                     remove={this.removeMarkerHandler} />
-                <Map 
+                <Map
+                    styles={mapStyle} 
                     google={this.props.google} 
                     zoom={8}
                     initialCenter={{
