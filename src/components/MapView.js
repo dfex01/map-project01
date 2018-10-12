@@ -13,6 +13,10 @@ class MapView extends Component {
         activeMarker: null,
         showingInfoWindow: false,
         selectedPlace: {},
+        user: {
+            name: 'Alex Rogers',
+            image: 'https://img1.looper.com/img/uploads/2017/06/dumb-and-dumber-780x438_rev1.jpg'
+        },
         markers: [
             { 
                 name: 'start',
@@ -174,9 +178,17 @@ class MapView extends Component {
                         onClose={this.onInfoWindowClose}
                         marker={this.state.activeMarker}
                         visible={this.state.showingInfoWindow}>
-                            <div>
+                            <div className="iw-content">
                                 <h1>{this.state.selectedPlace.name}</h1>
-                                <p>{this.state.selectedPlace.description}</p>
+                                <div className="iw-inner-content">
+                                    <div className="user-info">
+                                        <img className="iw-img" src={this.state.user.image} alt ={this.state.user.name}/>
+                                        <p>{this.state.user.name}</p>
+                                    </div>
+                                    <div className="iw-details">
+                                        <p>{this.state.selectedPlace.description}</p>
+                                    </div>
+                                </div>
                             </div>
                         </InfoWindow>
                 </Map>

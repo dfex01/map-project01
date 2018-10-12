@@ -7,3 +7,34 @@
 .iwBase {
     background-color: #8ec3b9 !important;  
 }
+
+.iw-content {
+    color: #1a3646;
+}
+.iw-inner-content {
+    margin: 25px 0px;
+    border-radius: 5%;
+    padding: 10px;
+    display: flex;
+}
+
+
+.user-info {
+    padding-right: 25px;
+    margin: auto;
+    text-align: left;
+    border-right: 2px solid black;
+}
+
+.iw-img {
+    height: 50px;
+    width: 50px;
+    border-radius: 5%;
+}
+
+.iw-details {
+    padding-left: 25px;
+    max-width: 200px;
+    text-align: left;
+    font-size: 1.5em;
+}
