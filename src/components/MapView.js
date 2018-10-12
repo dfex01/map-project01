@@ -5,6 +5,7 @@ import uuid from 'uuid';
 import MarkerEditor from './MarkerEditor';
 import Toolbar from './Toolbar';
 import { mapStyle } from '../assets/mapStyle/mapStyle.js';
+import '../assets/styles/infowindow.css';
 
 class MapView extends Component {
 
@@ -162,15 +163,17 @@ class MapView extends Component {
                     }} 
                     onClick={(t, map, c) => this.onMapClicked(map, c)}>
                     {markers}
-                    <InfoWindow
-                    onClose={this.onInfoWindowClose}
-                    marker={this.state.activeMarker}
-                    visible={this.state.showingInfoWindow}>
-                        <div>
-                            <h1>{this.state.selectedPlace.name}</h1>
-                            <p>{this.state.selectedPlace.description}</p>
-                        </div>
-                    </InfoWindow>
+                    <div className="InfoWindow">
+                        <InfoWindow
+                        onClose={this.onInfoWindowClose}
+                        marker={this.state.activeMarker}
+                        visible={this.state.showingInfoWindow}>
+                            <div>
+                                <h1>{this.state.selectedPlace.name}</h1>
+                                <p>{this.state.selectedPlace.description}</p>
+                            </div>
+                        </InfoWindow>
+                    </div>
                 </Map>
             </div>
         );
