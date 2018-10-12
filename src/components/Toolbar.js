@@ -1,13 +1,22 @@
 import React from 'react';
 
+import '../assets/styles/toolbar.css';
+
 const Toolbar = (props) => {
     return (
-        <div>
-            <button 
-                onClick={props.click}
-                style={{zIndex:10000, position: 'fixed'}}>
-                    Edit Active Marker
-            </button>
+        <div className="Toolbar">
+            <ul className="NavList">
+                <li onClick={props.addMarker}>
+                    <button className="Button">
+                    Add Marker
+                    </button>
+                </li>
+                <li onClick={props.editMarker}>
+                    <button className="Button">
+                    Edit Marker
+                    </button>
+                </li>
+            </ul>
         </div>
     );
 

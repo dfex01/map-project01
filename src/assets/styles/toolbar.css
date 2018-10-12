@@ -1,0 +1,25 @@
+.Toolbar {
+    z-index: 10000;
+    right: 0;
+    overflow: hidden;
+    position: fixed;
+    margin-right: 13px;
+    margin-top:20px;  
+}
+
+.NavList {
+    list-style-type: none;
+}
+
+.Button {
+    margin-top: 6%;
+    text-align: center;
+    color: #1a3646;
+    font-family: Roboto, Arial, sans-serif;
+    background-color: #8ec3b9;
+    padding: 8px;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
+    border-color: silver; 
+}
+

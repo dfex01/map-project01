@@ -4,27 +4,28 @@ import uuid from 'uuid';
 
 import MarkerEditor from './MarkerEditor';
 import Toolbar from './Toolbar';
+import { mapStyle } from '../assets/mapStyle/mapStyle.js';
 
 class MapView extends Component {
 
     state = {
-        activeMarker: {},
+        activeMarker: null,
         showingInfoWindow: false,
         selectedPlace: {},
         markers: [
             { 
                 name: 'start',
+                id: uuid.v1(),
                 description: 'home sweet home',
                 lat: 33.83008972168741,
                 lng: -84.35267661111448
             }
         ],
-        editingMarker: false
+        editingMarker: false,
+        addingMarker: false
     }
 
     onMarkerClick = (props, marker, e) => {
-        console.log('[onMarkerClick]');
-       // console.log(props);
         this.setState({ 
             activeMarker: marker, 
             showingInfoWindow: true,
@@ -37,7 +38,7 @@ class MapView extends Component {
     }
 
     onMapClicked = (map, click) => {
-        console.log('[onMapClicked]');
+        if (this.state.addingMarker === false) return null;
         if (this.state.showingInfoWindow) {
             this.setState({
               showingInfoWindow: false,
@@ -46,16 +47,25 @@ class MapView extends Component {
         } else {
             const newMarker = {
                 name: 'New Marker',
+                id: uuid.v1(),
                 description: 'This is a new marker :)',
                 lat: click.latLng.lat(),
                 lng: click.latLng.lng()
             };
             const nextMarkers = [...this.state.markers, newMarker];
-            this.setState({markers: nextMarkers});
+            this.setState({markers: nextMarkers, addingMarker: false});
         }  
     }
 
+    onInfoWindowClose = () => {
+        this.setState({ 
+            activeMarker: null,
+            selectedPlace: {},
+            showingInfoWindow: false });
+    }
+
     editMarkerHandler = () => {
+        if (this.state.activeMarker == null) return null;
         this.setState({ editingMarker: true });
     }
 
@@ -67,7 +77,7 @@ class MapView extends Component {
         let newPlace = {...this.state.selectedPlace};
         newPlace.name = e.target.value;
         this.state.markers.map(marker => {
-            if (marker.name === this.state.selectedPlace.name){
+            if (marker.id === this.state.selectedPlace.id){
                 const index = this.state.markers.indexOf(marker);
                 let newMarkers = [...this.state.markers]
                 newMarkers[index].name = e.target.value;
@@ -81,7 +91,7 @@ class MapView extends Component {
         let newPlace = {...this.state.selectedPlace}
         newPlace.description = e.target.value;
         this.state.markers.map(marker => {
-            if (marker.name === this.state.selectedPlace.name){
+            if (marker.id=== this.state.selectedPlace.id){
                 const index = this.state.markers.indexOf(marker);
                 let newMarkers = [...this.state.markers]
                 newMarkers[index].description = e.target.value;
@@ -93,7 +103,7 @@ class MapView extends Component {
 
     removeMarkerHandler = () => {
         this.state.markers.map(marker => {
-            if (marker.name === this.state.selectedPlace.name) {
+            if (marker.id === this.state.selectedPlace.id) {
                 const index = this.state.markers.indexOf(marker);
                 let newMarkers = [...this.state.markers];
                 newMarkers.splice(index, 1);
@@ -101,8 +111,12 @@ class MapView extends Component {
                     markers: newMarkers,
                     showingInfoWindow: false,
                     editingMarker: false });
-            }
+            } return null;
         });
+    }
+
+    addMarkerMode = () => {
+        this.setState({ addingMarker: true });
     }
 
     render() {
@@ -110,7 +124,8 @@ class MapView extends Component {
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
-                    key= {uuid.v1()}
+                    id={mrkr.id}
+                    key= {mrkr.id}
                     onClick={this.onMarkerClick}
                     onMouseover={this.onMouseoverMarker} 
                     name={mrkr.name}
@@ -125,8 +140,10 @@ class MapView extends Component {
 
         return (
             <div>
-                <Toolbar click={this.editMarkerHandler} />
-                <MarkerEditor 
+                <Toolbar 
+                    editMarker={this.editMarkerHandler}
+                    addMarker={this.addMarkerMode} />
+                <MarkerEditor
                     showMarkerEditor={this.state.editingMarker} 
                     close={this.finishEditHandler}
                     place={this.state.selectedPlace} 
@@ -134,7 +151,8 @@ class MapView extends Component {
                     editName={this.editNameHandler}
                     editDescription={this.editDescriptionHandler}
                     remove={this.removeMarkerHandler} />
-                <Map 
+                <Map
+                    styles={mapStyle} 
                     google={this.props.google} 
                     zoom={8}
                     initialCenter={{
