@@ -16,6 +16,11 @@ const Toolbar = (props) => {
                     Edit Marker
                     </button>
                 </li>
+                <li onClick={props.removeMarker}>
+                    <button className="Button">
+                    Remove Marker
+                    </button>
+                </li>
             </ul>
         </div>
     );
