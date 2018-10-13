@@ -12,21 +12,22 @@ class MarkerEditor extends Component {
                     <h1>Marker Editor</h1>
 
                     <label>Name this location</label>
-                    <input 
+                    <textarea 
                         type="text" 
                         value={this.props.place.name} 
                         onChange={(e) => this.props.editName(e)}
                         onKeyPress={(e) => this.props.keyPress(e)} /><br />
 
                     <label>Tell your story about this location</label>
-                    <input 
+                    <textarea
+                        className="storyInput" 
                         type="text" 
                         value={this.props.place.description} 
                         onChange={(e) => this.props.editDescription(e)} 
                         onKeyPress={(e) => this.props.keyPress(e)}/><br />
 
                     <button onClick={this.props.remove}>Remove this Marker</button>
-                    <input type="submit" onClick={this.props.close} />
+                    <button onClick={this.props.close}>Submit</button>
                 </div>
         );
 

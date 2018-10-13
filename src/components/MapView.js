@@ -77,6 +77,7 @@ class MapView extends Component {
     }
 
     editMarkerHandler = () => {
+        if (!this.state.showingInfoWindow) return alert("You must select a marker to edit first");
         if (this.state.activeMarker == null) return null;
         this.setState({ editingMarker: true });
     }
@@ -113,14 +114,8 @@ class MapView extends Component {
         this.setState({ selectedPlace: newPlace });
     }
 
-    keyPressHandler = (e) => {
-        if (e.charCode === 13) {
-            console.log('pressed enter');
-            this.finishEditHandler();
-        }
-    }
-
     removeMarkerHandler = () => {
+        if (!this.state.showingInfoWindow) return alert("You must select a marker to delete first");
         this.state.markers.map(marker => {
             if (marker.id === this.state.selectedPlace.id) {
                 const index = this.state.markers.indexOf(marker);
@@ -136,6 +131,12 @@ class MapView extends Component {
 
     addMarkerMode = () => {
         this.setState({ addingMarker: true });
+    }
+
+    keyPressHandler = (e) => {
+        if (e.charCode === 13) {
+            this.finishEditHandler();
+        }
     }
 
     render() {
