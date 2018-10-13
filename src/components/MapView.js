@@ -14,20 +14,43 @@ class MapView extends Component {
         showingInfoWindow: false,
         selectedPlace: {},
         user: {
-            name: 'Alex Rogers',
+            name: 'Anonymous User',
             image: 'https://img1.looper.com/img/uploads/2017/06/dumb-and-dumber-780x438_rev1.jpg'
         },
-        markers: [
-            { 
-                name: 'start',
-                id: uuid.v1(),
-                description: 'home sweet home',
-                lat: 33.83008972168741,
-                lng: -84.35267661111448
-            }
-        ],
+        markers: [],
         editingMarker: false,
-        addingMarker: false
+        addingMarker: false,
+        friendData: []
+    }
+
+    //this would be id's retrieved from database based on their friends list, not adding this for proof of concept app
+    friends = ['alex']
+
+    componentDidMount() {
+        this.friends.map(friend => {
+            fetch("https://map-project-1399a.firebaseio.com/users/" + friend + ".json")
+                .then(response => response.json()
+
+                .then(data => {
+                    let nextFriendData = [...this.state.friendData];
+                    nextFriendData.push(data);
+                    let newMarkers = [...this.state.markers];
+                    nextFriendData.map(obj => {
+                        let objArray = Object.entries(obj);
+                        Object.entries(objArray[0][1]).map(marker => {
+                            let currentMarker = marker[1];
+                            currentMarker.userName = obj.name;
+                            currentMarker.userPic = obj.picture;
+                            newMarkers.push(currentMarker);
+                            return newMarkers;
+                        })
+                        this.setState({ markers: newMarkers });
+                    });
+                }))
+                .catch(err => console.log(err));
+            return null;
+        });
+
     }
 
     onMarkerClick = (props, marker, e) => {
@@ -62,7 +85,9 @@ class MapView extends Component {
                 id: uuid.v1(),
                 description: 'This is a new marker :)',
                 lat: click.latLng.lat(),
-                lng: click.latLng.lng()
+                lng: click.latLng.lng(),
+                userName: this.state.user.name,
+                userPic: this.state.user.image
             };
             const nextMarkers = [...this.state.markers, newMarker];
             this.setState({markers: nextMarkers, addingMarker: false});
@@ -144,6 +169,9 @@ class MapView extends Component {
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
+                    //icon={{fillColor: '#fffff'}}
+                    user={mrkr.userName}
+                    pic={mrkr.userPic}
                     id={mrkr.id}
                     key= {mrkr.id}
                     onClick={this.onMarkerClick}
@@ -191,8 +219,8 @@ class MapView extends Component {
                                 <h1>{this.state.selectedPlace.name}</h1>
                                 <div className="iw-inner-content">
                                     <div className="user-info">
-                                        <img className="iw-img" src={this.state.user.image} alt ={this.state.user.name}/>
-                                        <p>{this.state.user.name}</p>
+                                        <img className="iw-img" src={this.state.selectedPlace.pic} alt ={this.state.selectedPlace.use}/>
+                                        <p>{this.state.selectedPlace.user}</p>
                                     </div>
                                     <div className="iw-details">
                                         <p style={{fontWeight: "bold"}}>Story</p>
