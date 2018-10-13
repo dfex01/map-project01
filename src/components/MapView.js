@@ -45,6 +45,7 @@ class MapView extends Component {
                             return newMarkers;
                         })
                         this.setState({ markers: newMarkers });
+                        return null;
                     });
                 }))
                 .catch(err => console.log(err));
