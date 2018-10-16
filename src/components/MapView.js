@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 import uuid from 'uuid';
+import firebase from './firebase';
 
 import MarkerEditor from './MarkerEditor';
 import Toolbar from './Toolbar';
@@ -25,12 +26,19 @@ class MapView extends Component {
 
     //this would be id's retrieved from database based on their friends list, not adding this for proof of concept app
     friends = ['alex']
+    
+
 
     componentDidMount() {
+        firebase.auth().onAuthStateChanged(() => {
+            let newUser = {...this.state.user};
+            newUser.name = firebase.auth().currentUser.displayName;
+            newUser.image = firebase.auth().currentUser.photoURL;
+            this.setState({ user: newUser });       
+        })
         this.friends.map(friend => {
             fetch("https://map-project-1399a.firebaseio.com/users/" + friend + ".json")
                 .then(response => response.json()
-
                 .then(data => {
                     let nextFriendData = [...this.state.friendData];
                     nextFriendData.push(data);
@@ -51,10 +59,11 @@ class MapView extends Component {
                 .catch(err => console.log(err));
             return null;
         });
-
     }
+    
 
     onMarkerClick = (props, marker, e) => {
+        console.log(this.state.user);
         this.setState({ 
             activeMarker: marker, 
             showingInfoWindow: true,
@@ -165,8 +174,8 @@ class MapView extends Component {
         }
     }
 
-    render() {
-
+    render() {  
+        
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
@@ -238,5 +247,5 @@ class MapView extends Component {
 
 
 export default GoogleApiWrapper({
-    apiKey: 'AIzaSyCYHkj8sSYIxtHm_guGKtkxqJTRTPF4luE'
+    //apiKey: 'AIzaSyCYHkj8sSYIxtHm_guGKtkxqJTRTPF4luE'
 })(MapView)
