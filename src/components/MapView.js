@@ -15,29 +15,39 @@ class MapView extends Component {
         showingInfoWindow: false,
         selectedPlace: {},
         user: {
+            uid: 'null',
             name: 'Anonymous User',
             image: 'https://img1.looper.com/img/uploads/2017/06/dumb-and-dumber-780x438_rev1.jpg'
         },
         markers: [],
         editingMarker: false,
         addingMarker: false,
-        friendData: []
+        friendData: [],
     }
 
+   
     //this would be id's retrieved from database based on their friends list, not adding this for proof of concept app
-    friends = ['alex']
+    //these are ids of all users (me) from actual database
+    friendIds = ['ZWg3lnMTJqZGqnWqdfl6lZWJCy72', 'nFk2uNHQ4ZOXYDGMv3fQgKoVjwb2']
     
 
 
+
+    
     componentDidMount() {
+
         firebase.auth().onAuthStateChanged(() => {
             let newUser = {...this.state.user};
-            newUser.name = firebase.auth().currentUser.displayName;
-            newUser.image = firebase.auth().currentUser.photoURL;
-            this.setState({ user: newUser });       
+            if (firebase.auth().currentUser) {
+                newUser.uid = firebase.auth().currentUser.uid;
+                newUser.name = firebase.auth().currentUser.displayName;
+                newUser.image = firebase.auth().currentUser.photoURL;
+                this.setState({ user: newUser });
+            }       
         })
-        this.friends.map(friend => {
-            fetch("https://map-project-1399a.firebaseio.com/users/" + friend + ".json")
+
+        this.friendIds.map(id => {
+            fetch("https://map-project-1399a.firebaseio.com/users/" + id + ".json")
                 .then(response => response.json()
                 .then(data => {
                     let nextFriendData = [...this.state.friendData];
@@ -45,7 +55,7 @@ class MapView extends Component {
                     let newMarkers = [...this.state.markers];
                     nextFriendData.map(obj => {
                         let objArray = Object.entries(obj);
-                        Object.entries(objArray[0][1]).map(marker => {
+                        Object.entries(objArray[1][1]).map(marker => {
                             let currentMarker = marker[1];
                             currentMarker.userName = obj.name;
                             currentMarker.userPic = obj.picture;
@@ -59,11 +69,11 @@ class MapView extends Component {
                 .catch(err => console.log(err));
             return null;
         });
+
     }
     
 
     onMarkerClick = (props, marker, e) => {
-        console.log(this.state.user);
         this.setState({ 
             activeMarker: marker, 
             showingInfoWindow: true,
@@ -174,6 +184,15 @@ class MapView extends Component {
         }
     }
 
+    saveMarkerHandler = () => {
+        firebase.database().ref('users/' + this.state.user.id).set({
+            id: this.state.user.id,
+            name: this.state.user.name,
+            picture: this.state.user.image,
+            markers: this.state.markers
+        });
+    }
+
     render() {  
         
         const markers = this.state.markers.map(mrkr => {
@@ -201,7 +220,8 @@ class MapView extends Component {
                 <Toolbar 
                     editMarker={this.editMarkerHandler}
                     addMarker={this.addMarkerMode}
-                    removeMarker={this.removeMarkerHandler} />
+                    removeMarker={this.removeMarkerHandler} 
+                    saveMarker={this.saveMarkerHandler} />
                 <MarkerEditor
                     showMarkerEditor={this.state.editingMarker} 
                     close={this.finishEditHandler}
