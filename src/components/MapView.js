@@ -20,20 +20,13 @@ class MapView extends Component {
             image: 'https://img1.looper.com/img/uploads/2017/06/dumb-and-dumber-780x438_rev1.jpg'
         },
         markers: [],
+        friendMarkers: [],
         editingMarker: false,
         addingMarker: false,
-        friendData: [],
+        loadedFriends: false
     }
 
-   
-    //this would be id's retrieved from database based on their friends list, not adding this for proof of concept app
-    //these are ids of all users (me) from actual database
-    friendIds = ['ZWg3lnMTJqZGqnWqdfl6lZWJCy72', 'nFk2uNHQ4ZOXYDGMv3fQgKoVjwb2']
-    
-
-
-
-    
+     
     componentDidMount() {
 
         firebase.auth().onAuthStateChanged(() => {
@@ -43,33 +36,19 @@ class MapView extends Component {
                 newUser.name = firebase.auth().currentUser.displayName;
                 newUser.image = firebase.auth().currentUser.photoURL;
                 this.setState({ user: newUser });
-            }       
+            }    
         })
-
-        this.friendIds.map(id => {
-            fetch("https://map-project-1399a.firebaseio.com/users/" + id + ".json")
-                .then(response => response.json()
-                .then(data => {
-                    let nextFriendData = [...this.state.friendData];
-                    nextFriendData.push(data);
-                    let newMarkers = [...this.state.markers];
-                    nextFriendData.map(obj => {
-                        let objArray = Object.entries(obj);
-                        Object.entries(objArray[1][1]).map(marker => {
-                            let currentMarker = marker[1];
-                            currentMarker.userName = obj.name;
-                            currentMarker.userPic = obj.picture;
-                            newMarkers.push(currentMarker);
-                            return newMarkers;
-                        })
-                        this.setState({ markers: newMarkers });
-                        return null;
-                    });
-                }))
-                .catch(err => console.log(err));
-            return null;
-        });
-
+        
+        firebase.database().ref('/users').once('value')
+            .then(snapshot => {
+                let updatedFriendMarkers = [...this.state.friendMarkers];
+                for (let key in snapshot.val()) {
+                    snapshot.val()[key].markers.map(marker => {
+                        updatedFriendMarkers.push(marker);
+                    })
+                }
+                this.setState({ friendMarkers: updatedFriendMarkers });
+        });  
     }
     
 
@@ -185,8 +164,8 @@ class MapView extends Component {
     }
 
     saveMarkerHandler = () => {
-        firebase.database().ref('users/' + this.state.user.id).set({
-            id: this.state.user.id,
+        firebase.database().ref('users/' + this.state.user.uid).set({
+            id: this.state.user.uid,
             name: this.state.user.name,
             picture: this.state.user.image,
             markers: this.state.markers
@@ -196,6 +175,25 @@ class MapView extends Component {
     render() {  
         
         const markers = this.state.markers.map(mrkr => {
+            return (
+                <Marker
+                    //icon={{fillColor: '#fffff'}}
+                    user={mrkr.userName}
+                    pic={mrkr.userPic}
+                    id={mrkr.id}
+                    key= {mrkr.id}
+                    onClick={this.onMarkerClick}
+                    onMouseover={this.onMouseoverMarker} 
+                    name={mrkr.name}
+                    description={mrkr.description}
+                    position={{
+                        lat: mrkr.lat,
+                        lng: mrkr.lng 
+                }}/>    
+            );
+        })
+
+        const friendMarkers = this.state.friendMarkers.map(mrkr => {
             return (
                 <Marker
                     //icon={{fillColor: '#fffff'}}
@@ -241,6 +239,7 @@ class MapView extends Component {
                     }} 
                     onClick={(t, map, c) => this.onMapClicked(map, c)}>
                     {markers}
+                    {friendMarkers}
                         <InfoWindow
                         onClose={this.onInfoWindowClose}
                         marker={this.state.activeMarker}
