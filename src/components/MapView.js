@@ -36,20 +36,32 @@ class MapView extends Component {
                 newUser.name = firebase.auth().currentUser.displayName;
                 newUser.image = firebase.auth().currentUser.photoURL;
                 this.setState({ user: newUser });
-            }    
-        })
-        
-        firebase.database().ref('/users').once('value')
+            } 
+            firebase.database().ref('/users').once('value')
             .then(snapshot => {
                 let updatedFriendMarkers = [...this.state.friendMarkers];
+                let updatedMarkers = [...this.state.markers]
                 for (let key in snapshot.val()) {
-                    snapshot.val()[key].markers.map(marker => {
-                        updatedFriendMarkers.push(marker);
-                        return updatedFriendMarkers;
-                    })
+                    if (key === this.state.user.uid) {
+                        snapshot.val()[key].markers.map(marker => {
+                            updatedMarkers.push(marker);
+                            return updatedMarkers;
+                        }) 
+                    } else {
+                        snapshot.val()[key].markers.map(marker => {
+                            updatedFriendMarkers.push(marker);
+                            return updatedFriendMarkers;
+                        })
+                    }
                 }
-                this.setState({ friendMarkers: updatedFriendMarkers });
+                this.setState({ markers: updatedMarkers, friendMarkers: updatedFriendMarkers });
+                console.log(this.state.user.uid)
         });  
+        })
+        
+
+        
+
     }
     
 
@@ -182,7 +194,6 @@ class MapView extends Component {
     }
 
     render() {  
-        
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
