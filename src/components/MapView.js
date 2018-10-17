@@ -45,6 +45,7 @@ class MapView extends Component {
                 for (let key in snapshot.val()) {
                     snapshot.val()[key].markers.map(marker => {
                         updatedFriendMarkers.push(marker);
+                        return updatedFriendMarkers;
                     })
                 }
                 this.setState({ friendMarkers: updatedFriendMarkers });
