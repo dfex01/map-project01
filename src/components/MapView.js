@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 import uuid from 'uuid';
+import firebase from './firebase';
 
 import MarkerEditor from './MarkerEditor';
 import Toolbar from './Toolbar';
@@ -14,45 +15,43 @@ class MapView extends Component {
         showingInfoWindow: false,
         selectedPlace: {},
         user: {
+            uid: 'null',
             name: 'Anonymous User',
             image: 'https://img1.looper.com/img/uploads/2017/06/dumb-and-dumber-780x438_rev1.jpg'
         },
         markers: [],
+        friendMarkers: [],
         editingMarker: false,
         addingMarker: false,
-        friendData: []
+        loadedFriends: false
     }
 
-    //this would be id's retrieved from database based on their friends list, not adding this for proof of concept app
-    friends = ['alex']
-
+     
     componentDidMount() {
-        this.friends.map(friend => {
-            fetch("https://map-project-1399a.firebaseio.com/users/" + friend + ".json")
-                .then(response => response.json()
 
-                .then(data => {
-                    let nextFriendData = [...this.state.friendData];
-                    nextFriendData.push(data);
-                    let newMarkers = [...this.state.markers];
-                    nextFriendData.map(obj => {
-                        let objArray = Object.entries(obj);
-                        Object.entries(objArray[0][1]).map(marker => {
-                            let currentMarker = marker[1];
-                            currentMarker.userName = obj.name;
-                            currentMarker.userPic = obj.picture;
-                            newMarkers.push(currentMarker);
-                            return newMarkers;
-                        })
-                        this.setState({ markers: newMarkers });
-                        return null;
-                    });
-                }))
-                .catch(err => console.log(err));
-            return null;
-        });
-
+        firebase.auth().onAuthStateChanged(() => {
+            let newUser = {...this.state.user};
+            if (firebase.auth().currentUser) {
+                newUser.uid = firebase.auth().currentUser.uid;
+                newUser.name = firebase.auth().currentUser.displayName;
+                newUser.image = firebase.auth().currentUser.photoURL;
+                this.setState({ user: newUser });
+            }    
+        })
+        
+        firebase.database().ref('/users').once('value')
+            .then(snapshot => {
+                let updatedFriendMarkers = [...this.state.friendMarkers];
+                for (let key in snapshot.val()) {
+                    snapshot.val()[key].markers.map(marker => {
+                        updatedFriendMarkers.push(marker);
+                        return updatedFriendMarkers;
+                    })
+                }
+                this.setState({ friendMarkers: updatedFriendMarkers });
+        });  
     }
+    
 
     onMarkerClick = (props, marker, e) => {
         this.setState({ 
@@ -165,9 +164,37 @@ class MapView extends Component {
         }
     }
 
-    render() {
+    saveMarkerHandler = () => {
+        firebase.database().ref('users/' + this.state.user.uid).set({
+            id: this.state.user.uid,
+            name: this.state.user.name,
+            picture: this.state.user.image,
+            markers: this.state.markers
+        });
+    }
 
+    render() {  
+        
         const markers = this.state.markers.map(mrkr => {
+            return (
+                <Marker
+                    //icon={{fillColor: '#fffff'}}
+                    user={mrkr.userName}
+                    pic={mrkr.userPic}
+                    id={mrkr.id}
+                    key= {mrkr.id}
+                    onClick={this.onMarkerClick}
+                    onMouseover={this.onMouseoverMarker} 
+                    name={mrkr.name}
+                    description={mrkr.description}
+                    position={{
+                        lat: mrkr.lat,
+                        lng: mrkr.lng 
+                }}/>    
+            );
+        })
+
+        const friendMarkers = this.state.friendMarkers.map(mrkr => {
             return (
                 <Marker
                     //icon={{fillColor: '#fffff'}}
@@ -192,7 +219,8 @@ class MapView extends Component {
                 <Toolbar 
                     editMarker={this.editMarkerHandler}
                     addMarker={this.addMarkerMode}
-                    removeMarker={this.removeMarkerHandler} />
+                    removeMarker={this.removeMarkerHandler} 
+                    saveMarker={this.saveMarkerHandler} />
                 <MarkerEditor
                     showMarkerEditor={this.state.editingMarker} 
                     close={this.finishEditHandler}
@@ -212,6 +240,7 @@ class MapView extends Component {
                     }} 
                     onClick={(t, map, c) => this.onMapClicked(map, c)}>
                     {markers}
+                    {friendMarkers}
                         <InfoWindow
                         onClose={this.onInfoWindowClose}
                         marker={this.state.activeMarker}
@@ -238,5 +267,5 @@ class MapView extends Component {
 
 
 export default GoogleApiWrapper({
-    apiKey: 'AIzaSyCYHkj8sSYIxtHm_guGKtkxqJTRTPF4luE'
+    //apiKey: 'AIzaSyCYHkj8sSYIxtHm_guGKtkxqJTRTPF4luE'
 })(MapView)
