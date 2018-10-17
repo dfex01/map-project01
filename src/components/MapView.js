@@ -104,6 +104,10 @@ class MapView extends Component {
     editMarkerHandler = () => {
         if (!this.state.showingInfoWindow) return alert("You must select a marker to edit first");
         if (this.state.activeMarker == null) return null;
+        if (!this.state.activeMarker.editable) {
+            alert('You cannot edit your friends markers!');
+            return null;
+        };
         this.setState({ editingMarker: true });
     }
 
@@ -141,6 +145,10 @@ class MapView extends Component {
 
     removeMarkerHandler = () => {
         if (!this.state.showingInfoWindow) return alert("You must select a marker to delete first");
+        if (!this.state.activeMarker.editable) {
+            alert('You cannot edit your friends markers!');
+            return null;
+        };
         this.state.markers.map(marker => {
             if (marker.id === this.state.selectedPlace.id) {
                 const index = this.state.markers.indexOf(marker);
@@ -178,6 +186,7 @@ class MapView extends Component {
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
+                    editable={true}
                     user={mrkr.userName}
                     pic={mrkr.userPic}
                     id={mrkr.id}
@@ -196,6 +205,7 @@ class MapView extends Component {
         const friendMarkers = this.state.friendMarkers.map(mrkr => {
             return (
                 <Marker
+                    editable={false}
                     user={mrkr.userName}
                     pic={mrkr.userPic}
                     id={mrkr.id}
