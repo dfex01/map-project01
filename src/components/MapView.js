@@ -178,7 +178,6 @@ class MapView extends Component {
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
-                    //icon={{fillColor: '#fffff'}}
                     user={mrkr.userName}
                     pic={mrkr.userPic}
                     id={mrkr.id}
@@ -197,7 +196,6 @@ class MapView extends Component {
         const friendMarkers = this.state.friendMarkers.map(mrkr => {
             return (
                 <Marker
-                    //icon={{fillColor: '#fffff'}}
                     user={mrkr.userName}
                     pic={mrkr.userPic}
                     id={mrkr.id}
