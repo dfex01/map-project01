@@ -55,7 +55,6 @@ class MapView extends Component {
                     }
                 }
                 this.setState({ markers: updatedMarkers, friendMarkers: updatedFriendMarkers });
-                console.log(this.state.user.uid)
         });  
         })
         
@@ -185,6 +184,10 @@ class MapView extends Component {
     }
 
     saveMarkerHandler = () => {
+        if (this.state.user.name === 'Anonymous User') {
+            alert('Anonymous users cannot save markers. Log in if you would like to save.');
+            return null;
+        }
         firebase.database().ref('users/' + this.state.user.uid).set({
             id: this.state.user.uid,
             name: this.state.user.name,
@@ -286,5 +289,5 @@ class MapView extends Component {
 
 
 export default GoogleApiWrapper({
-    //apiKey: 'AIzaSyCYHkj8sSYIxtHm_guGKtkxqJTRTPF4luE'
+    //apiKey: '<PUT API KEY HERE>'
 })(MapView)
