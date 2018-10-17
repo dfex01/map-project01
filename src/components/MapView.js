@@ -23,12 +23,10 @@ class MapView extends Component {
         friendMarkers: [],
         editingMarker: false,
         addingMarker: false,
-        loadedFriends: false
     }
 
      
     componentDidMount() {
-
         firebase.auth().onAuthStateChanged(() => {
             let newUser = {...this.state.user};
             if (firebase.auth().currentUser) {
@@ -56,11 +54,7 @@ class MapView extends Component {
                 }
                 this.setState({ markers: updatedMarkers, friendMarkers: updatedFriendMarkers });
         });  
-        })
-        
-
-        
-
+        })  
     }
     
 
