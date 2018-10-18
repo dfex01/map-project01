@@ -8,6 +8,8 @@ import MarkerEditor from './MarkerEditor';
 import Toolbar from './Toolbar';
 import { mapStyle } from '../assets/mapStyle/mapStyle.js';
 import '../assets/styles/mapview.css';
+import lightMarker from '../assets/images/light-marker.svg';
+import darkMarker from '../assets/images/dark-marker.svg';
 
 class MapView extends Component {
 
@@ -207,6 +209,8 @@ class MapView extends Component {
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
+                    icon={darkMarker}
+                    title={'You @ ' + mrkr.name}
                     editable={true}
                     user={mrkr.userName}
                     pic={mrkr.userPic}
@@ -226,6 +230,8 @@ class MapView extends Component {
         const friendMarkers = this.state.friendMarkers.map(mrkr => {
             return (
                 <Marker
+                    icon={lightMarker}
+                    title={mrkr.userName + ' @ ' + mrkr.name}
                     editable={false}
                     user={mrkr.userName}
                     pic={mrkr.userPic}
