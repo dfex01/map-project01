@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 
 import '../assets/styles/markerEditor.css'
-import MrkrEditBackdrop from './MrkrEditBackdrop';
+import Backdrop from './Backdrop';
 
 class MarkerEditor extends Component {
 
@@ -26,8 +26,8 @@ class MarkerEditor extends Component {
                         onChange={(e) => this.props.editDescription(e)} 
                         onKeyPress={(e) => this.props.keyPress(e)}/><br />
 
-                    <button onClick={this.props.remove}>Remove this Marker</button>
-                    <button onClick={this.props.close}>Submit</button>
+                    <div className="editorButton" onClick={this.props.remove}>REMOVE</div>
+                    <div className="editorButton" onClick={this.props.close}>SUBMIT</div>
                 </div>
         );
 
@@ -38,7 +38,7 @@ class MarkerEditor extends Component {
 
         return (
             <div>
-                <MrkrEditBackdrop 
+                <Backdrop 
                     show={this.props.showMarkerEditor}
                     clicked={this.props.close} />
                 {this.props.showMarkerEditor ? content : null} 

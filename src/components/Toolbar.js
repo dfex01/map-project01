@@ -7,24 +7,24 @@ const Toolbar = (props) => {
         <div className="Toolbar">
             <ul className="NavList">
                 <li onClick={props.addMarker}>
-                    <button className="Button">
-                    Add Marker
-                    </button>
+                    <div className="Button">
+                 Add    Marker
+                    </div>
                 </li>
                 <li onClick={props.editMarker}>
-                    <button className="Button">
-                    Edit Marker
-                    </button>
+                    <div className="Button">
+                        Edit Marker
+                    </div>
                 </li>
                 <li onClick={props.removeMarker}>
-                    <button className="Button">
-                    Remove Marker
-                    </button>
+                    <div className="Button">
+                        Remove Marker
+                    </div>
                 </li>
                 <li onClick={props.saveMarker}>
-                    <button className="Button">
-                    Save
-                    </button>
+                    <div className="Button">
+                        Save
+                    </div>
                 </li>
             </ul>
         </div>
