@@ -45,3 +45,17 @@
     text-align: left;
     font-size: 1.3em;
 }
+
+#alertBoxContainer {
+    width: 380px !important;
+    height: 100px !important;
+    text-transform: none !important;
+    background-color: #1a3646 !important;
+    border: 2px solid #8ec3b9 !important;
+    font-family: Roboto, Arial, sans-serif !important;
+}
+
+#alertBoxSVG {
+    stroke: #8ec3b9;
+    stroke-width: 3;
+}

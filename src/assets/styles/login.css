@@ -13,10 +13,14 @@
 
 .firebaseui-idp-button {
     width: 250px;
-    height: 100px;
+    height: 115px;
     margin: 10px auto;
     background-color: #8ec3b9;
-    border: 1px solid #1d2c4d;
+    border: 3px solid #1d2c4d;
+    border-radius: 6px;
+    cursor: pointer;
+    box-shadow: 1px 2px #1a3646;
+    padding: 10px;
 }
 
 
@@ -37,9 +41,13 @@
 
 .anonymous-button {
     width: 250px;
-    height: 100px;
+    height: 115px;
     margin: auto;
     margin-left: 40px;
     background-color: #8ec3b9;
-    border: 1px solid #1d2c4d;
+    border: 3px solid #1d2c4d;
+    cursor: pointer;
+    box-shadow: 1px 2px #1a3646;
+    padding: 10px;
+    border-radius: 6px;
 }

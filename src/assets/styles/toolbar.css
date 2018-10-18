@@ -3,8 +3,8 @@
     right: 0;
     overflow: hidden;
     position: fixed;
-    margin-right: 13px;
-    margin-top: 20px; 
+    margin-right: 2px;
+    margin-top: 150px; 
 }
 
 .NavList {
@@ -13,14 +13,15 @@
 
 .Button {
     width: 125px;
-    margin-top: 6%;
-    text-align: center;
-    color: #1a3646;
-    font-family: Roboto, Arial, sans-serif;
-    background-color: #8ec3b9;
+    margin-top: 5px;
     padding: 8px;
+    text-align: center;
+    color: white;
+    font-family: Roboto, Arial, sans-serif;
+    background-color: #1a3646;
+    border: 2px solid #8ec3b9;
     border-radius: 4px;
-    box-shadow: rgba(0, 0, 0, 0.3) 0px 1px 4px -1px;
-    border-color: silver; 
+    box-shadow: #4b6878 1px 2px;
+    cursor: pointer;
 }
 

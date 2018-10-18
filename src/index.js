@@ -4,10 +4,22 @@ import './assets/styles/index.css';
 import App from './components/App';
 import * as serviceWorker from './serviceWorker';
 import { BrowserRouter } from 'react-router-dom';
+import { Provider as AlertProvider } from 'react-alert';
+import AlertTemplate from 'react-alert-template-basic';
+
+//react-alert options
+const options = {
+    position: 'bottom center',
+    timeout: 5000,
+    offset: '30px',
+    transition: 'scale'
+  }
 
 const app = (
     <BrowserRouter>
-        <App />
+        <AlertProvider template={AlertTemplate} {...options}>
+            <App />
+        </AlertProvider>
     </BrowserRouter>
 );
 

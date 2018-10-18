@@ -2,11 +2,12 @@ import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 import uuid from 'uuid';
 import firebase from './firebase';
+import { withAlert } from 'react-alert'
 
 import MarkerEditor from './MarkerEditor';
 import Toolbar from './Toolbar';
 import { mapStyle } from '../assets/mapStyle/mapStyle.js';
-import '../assets/styles/infowindow.css';
+import '../assets/styles/mapview.css';
 
 class MapView extends Component {
 
@@ -23,12 +24,11 @@ class MapView extends Component {
         friendMarkers: [],
         editingMarker: false,
         addingMarker: false,
-        loadedFriends: false
+        alert: false
     }
 
      
     componentDidMount() {
-
         firebase.auth().onAuthStateChanged(() => {
             let newUser = {...this.state.user};
             if (firebase.auth().currentUser) {
@@ -36,20 +36,27 @@ class MapView extends Component {
                 newUser.name = firebase.auth().currentUser.displayName;
                 newUser.image = firebase.auth().currentUser.photoURL;
                 this.setState({ user: newUser });
-            }    
-        })
-        
-        firebase.database().ref('/users').once('value')
+            } 
+            firebase.database().ref('/users').once('value')
             .then(snapshot => {
                 let updatedFriendMarkers = [...this.state.friendMarkers];
+                let updatedMarkers = [...this.state.markers]
                 for (let key in snapshot.val()) {
-                    snapshot.val()[key].markers.map(marker => {
-                        updatedFriendMarkers.push(marker);
-                        return updatedFriendMarkers;
-                    })
+                    if (key === this.state.user.uid) {
+                        snapshot.val()[key].markers.map(marker => {
+                            updatedMarkers.push(marker);
+                            return updatedMarkers;
+                        }) 
+                    } else {
+                        snapshot.val()[key].markers.map(marker => {
+                            updatedFriendMarkers.push(marker);
+                            return updatedFriendMarkers;
+                        })
+                    }
                 }
-                this.setState({ friendMarkers: updatedFriendMarkers });
+                this.setState({ markers: updatedMarkers, friendMarkers: updatedFriendMarkers });
         });  
+        })
     }
     
 
@@ -102,12 +109,9 @@ class MapView extends Component {
     }
 
     editMarkerHandler = () => {
-        if (!this.state.showingInfoWindow) return alert("You must select a marker to edit first");
+        if (!this.state.showingInfoWindow) return this.giveAlert("You must select a marker to edit first");
         if (this.state.activeMarker == null) return null;
-        if (!this.state.activeMarker.editable) {
-            alert('You cannot edit your friends markers!');
-            return null;
-        };
+        if (!this.state.activeMarker.editable) return this.giveAlert("You can't edit your friend's markers");         
         this.setState({ editingMarker: true });
     }
 
@@ -144,11 +148,9 @@ class MapView extends Component {
     }
 
     removeMarkerHandler = () => {
-        if (!this.state.showingInfoWindow) return alert("You must select a marker to delete first");
-        if (!this.state.activeMarker.editable) {
-            alert('You cannot edit your friends markers!');
-            return null;
-        };
+        if (!this.state.showingInfoWindow) return this.giveAlert("You must select a marker to delete first");
+        
+        if (!this.state.activeMarker.editable) return this.giveAlert('You cannot remove your friends markers!');
         this.state.markers.map(marker => {
             if (marker.id === this.state.selectedPlace.id) {
                 const index = this.state.markers.indexOf(marker);
@@ -173,6 +175,7 @@ class MapView extends Component {
     }
 
     saveMarkerHandler = () => {
+        if (this.state.user.name === 'Anonymous User') return this.giveAlert('Anonymous users cannot save markers. Log in if you would like to save.')
         firebase.database().ref('users/' + this.state.user.uid).set({
             id: this.state.user.uid,
             name: this.state.user.name,
@@ -181,8 +184,26 @@ class MapView extends Component {
         });
     }
 
-    render() {  
+    giveAlert = (text) => {
+        if (!this.state.alert) {
+            this.setState({ alert: true });
+            this.props.alert.show(
+                (text),
+                {
+                    onOpen: () => {
+                        document.getElementById('root').parentNode.children[6].children[0].children[0].children[0].children[0].setAttribute('id', 'alertBoxContainer');
+                        document.getElementById('root').parentNode.children[6].children[0].children[0].children[0].children[0].children[0].setAttribute('id', 'alertBoxSVG');
+                    },
+                    timeout: 2500,
+                    type: 'success',
+                    onClose: () => {this.setState({ alert: false })}
+                }
+            );
         
+        }
+    }
+
+    render() {  
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
@@ -275,5 +296,5 @@ class MapView extends Component {
 
 
 export default GoogleApiWrapper({
-    //apiKey: 'AIzaSyCYHkj8sSYIxtHm_guGKtkxqJTRTPF4luE'
-})(MapView)
+    //apiKey: '<PUT API KEY HERE>'
+})(withAlert(MapView))
