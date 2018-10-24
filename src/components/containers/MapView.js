@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { Map, InfoWindow, Marker, GoogleApiWrapper } from 'google-maps-react';
 import uuid from 'uuid';
-import firebase from './firebase';
+import firebase from '../firebase';
 import { withAlert } from 'react-alert'
 
-import MarkerEditor from './MarkerEditor';
-import Toolbar from './Toolbar';
-import { mapStyle } from '../assets/mapStyle/mapStyle.js';
-import '../assets/styles/mapview.css';
-import lightMarker from '../assets/images/light-marker.svg';
-import darkMarker from '../assets/images/dark-marker.svg';
+import MarkerEditor from '../MarkerEditor';
+import Toolbar from '../Toolbar/Toolbar';
+import { mapStyle } from '../../assets/mapStyle/mapStyle.js';
+import '../../assets/styles/mapview.css';
+import lightMarker from '../../assets/images/light-marker.svg';
+import darkMarker from '../../assets/images/dark-marker.svg';
 
 class MapView extends Component {
 
@@ -26,7 +26,8 @@ class MapView extends Component {
         friendMarkers: [],
         editingMarker: false,
         addingMarker: false,
-        alert: false
+        alert: false,
+        showingToolbar: false
     }
 
      
@@ -114,7 +115,7 @@ class MapView extends Component {
         if (!this.state.showingInfoWindow) return this.giveAlert("You must select a marker to edit first");
         if (this.state.activeMarker == null) return null;
         if (!this.state.activeMarker.editable) return this.giveAlert("You can't edit your friend's markers");         
-        this.setState({ editingMarker: true });
+        this.setState({ editingMarker: !this.state.editingMarker });
     }
 
     finishEditHandler = () => {
@@ -186,6 +187,10 @@ class MapView extends Component {
         });
     }
 
+    toggleToolbarHandler = () => {
+        this.setState({ showingToolbar: !this.state.showingToolbar });
+    }
+
     giveAlert = (text) => {
         if (!this.state.alert) {
             this.setState({ alert: true });
@@ -193,9 +198,14 @@ class MapView extends Component {
                 (text),
                 {
                     onOpen: () => {
-                        document.getElementById('root').parentNode.children[6].children[0].children[0].children[0].children[0].setAttribute('id', 'alertBoxContainer');
-                        document.getElementById('root').parentNode.children[6].children[0].children[0].children[0].children[0].children[0].setAttribute('id', 'alertBoxSVG');
-                    },
+                        if (document.getElementById('root').parentNode.children[6].children[0]) {
+                            document.getElementById('root').parentNode.children[6].children[0].children[0].children[0].children[0].setAttribute('id', 'alertBoxContainer');
+                            document.getElementById('root').parentNode.children[6].children[0].children[0].children[0].children[0].children[0].setAttribute('id', 'alertBoxSVG');
+                        } else {
+                            document.getElementById('root').parentNode.children[5].children[0].children[0].children[0].children[0].setAttribute('id', 'alertBoxContainer');
+                            document.getElementById('root').parentNode.children[5].children[0].children[0].children[0].children[0].children[0].setAttribute('id', 'alertBoxSVG');
+                        }
+                        },
                     timeout: 2500,
                     type: 'success',
                     onClose: () => {this.setState({ alert: false })}
@@ -249,9 +259,12 @@ class MapView extends Component {
         })
 
 
+
         return (
             <div>
-                <Toolbar 
+                <Toolbar
+                    show={this.state.showingToolbar}
+                    toggle={this.toggleToolbarHandler}
                     editMarker={this.editMarkerHandler}
                     addMarker={this.addMarkerMode}
                     removeMarker={this.removeMarkerHandler} 
@@ -302,5 +315,5 @@ class MapView extends Component {
 
 
 export default GoogleApiWrapper({
-    //apiKey: '<PUT API KEY HERE>'
+    //apiKey: <API KEY GOES HERE>
 })(withAlert(MapView))
