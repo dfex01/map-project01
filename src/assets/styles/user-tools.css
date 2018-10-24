@@ -46,7 +46,8 @@
     display: flex;
     list-style: none;
     align-items: center;
-    padding-inline-start: 28px;
+    padding-inline-start: 45px;
+    margin: auto;
 }
 
 .user-nav-item {

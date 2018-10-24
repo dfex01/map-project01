@@ -5,12 +5,14 @@ class Friends extends Component {
         return (
             <div>
                 <h1>Friend List</h1>
-                <p>User 1</p>
-                <p>User 2</p>
-                <p>User 3</p>
-                <p>User 4</p>
-                <p>User 5</p>
-                <p>User 6</p>
+                {this.props.friends.map(user => {
+                    return (
+                        <div className="user-card" key={user.id}>
+                            <img src={user.picture} className="user-pic" alt={user.name}/>
+                            <div className="user-name">{user.name}</div>
+                        </div>
+                    );
+                })}
             </div>
         );
     }
