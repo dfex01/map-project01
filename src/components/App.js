@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Route, Switch } from 'react-router-dom';
 
 import '../assets/styles/App.css';
-import MapView from './MapView';
+import MapView from './containers/MapView';
 import Login from './Login';
 
 class App extends Component {

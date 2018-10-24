@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 
-import '../assets/styles/markerEditor.css'
+import '../assets/styles/marker-editor.css'
 import Backdrop from './Backdrop';
 
 class MarkerEditor extends Component {
 
     render() {
         let content = (
-                <div className="Modal">
+                <div className="editor-modal">
 
                     <h1>Marker Editor</h1>
 

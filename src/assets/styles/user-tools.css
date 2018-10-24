@@ -1,0 +1,126 @@
+.users-main-content {
+    min-width: 224px;
+}
+
+.user-tools {
+    position: fixed;
+    left: 0px;
+    z-index: 10000;
+    width: 280px;
+    top: 135px;
+    box-sizing: border-box;
+    transition: all .8s ease-in-out;
+    color: white;
+    font-family: Roboto, Arial, sans-serif;
+    background-color: #1a3646;
+    border: 2px solid #8ec3b9;
+    border-radius: 4px;
+    text-align: center;
+    font-size: .8em;
+    padding: 20px;
+    height: 650px;
+    display: flex;
+}
+
+.hide-user-tools {
+    position: fixed;
+    left: -280px;
+    z-index: 10000;
+    width: 280px;
+    top: 135px;
+    box-sizing: border-box;
+    transition: all .8s ease-in-out;
+    color: white;
+    font-family: Roboto, Arial, sans-serif;
+    background-color: #1a3646;
+    border: 2px solid #8ec3b9;
+    border-radius: 4px;
+    text-align: center;
+    font-size: .8em;
+    padding: 20px;
+    height: 650px;
+    display: flex;
+}
+
+.user-nav {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    padding-inline-start: 45px;
+    margin: auto;
+}
+
+.user-nav-item {
+    padding: 10px;
+    margin: 2px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 1rem;
+    border: 1px solid white;
+    border-radius: 10px;
+    text-decoration: none;
+}
+
+.user-nav-item:visited {
+    text-decoration: none;
+    color: inherit; 
+}
+
+.user-nav-item:hover {
+    color: #8ec3b9;
+    border: 1px solid #8ec3b9;
+    text-decoration: none;
+}
+
+.user-nav .active {
+    color: #8ec3b9;
+    background-color: #0C2533;
+}
+
+.users-icon-button {
+    width: 40px;
+    height: 40px;
+    line-height: 50px;
+    text-align: center;
+    background-color: #1a3646;
+    border: 2px solid #8ec3b9;
+    border-radius: 40px;
+    cursor: pointer;
+    margin-top: 65px;
+    margin-left: 50px;
+}
+
+.users-icon {
+    padding-top: 7px;
+    width: 25px;
+    height: 25px;
+}
+
+.user-card {
+    width: 220px;
+    height: 50px;
+    background-color: #8ec3b9;
+    border: 2px solid white;
+    color: #1a3646;
+    display: flex;
+    margin: 5px auto;
+    border-radius: 5px;
+}
+
+.user-pic {
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    margin: auto 5px;
+}
+
+.user-name {
+    margin: auto 5px;
+    font-weight: bold;
+    width: 110px;
+}
+
+.add-friend-icon {
+    width: 30px;
+    cursor: pointer;
+}
