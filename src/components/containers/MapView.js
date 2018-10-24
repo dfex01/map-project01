@@ -5,6 +5,7 @@ import firebase from '../firebase';
 import { withAlert } from 'react-alert'
 
 import MarkerEditor from '../MarkerEditor';
+import UserTools from '../Users/UserTools';
 import Toolbar from '../Toolbar/Toolbar';
 import { mapStyle } from '../../assets/mapStyle/mapStyle.js';
 import '../../assets/styles/mapview.css';
@@ -27,7 +28,8 @@ class MapView extends Component {
         editingMarker: false,
         addingMarker: false,
         alert: false,
-        showingToolbar: false
+        showingToolbar: false,
+        showingUsers: true
     }
 
      
@@ -191,6 +193,11 @@ class MapView extends Component {
         this.setState({ showingToolbar: !this.state.showingToolbar });
     }
 
+    toggleUsersHandler = () => {
+        console.log('toggle');
+        this.setState({ showingUsers: !this.state.showingUsers });
+    }
+
     giveAlert = (text) => {
         if (!this.state.alert) {
             this.setState({ alert: true });
@@ -278,6 +285,9 @@ class MapView extends Component {
                     editDescription={this.editDescriptionHandler}
                     remove={this.removeMarkerHandler}
                     keyPress={this.keyPressHandler} />
+                <UserTools 
+                    toggle={this.toggleUsersHandler}
+                    show={this.state.showingUsers} />
                 <Map
                     styles={mapStyle} 
                     google={this.props.google} 
