@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, Switch } from 'react-router-dom';
+import { Route, Switch, Link } from 'react-router-dom';
 import { Container, Col } from 'reactstrap';
 
 import '../../assets/styles/user-tools.css'
@@ -11,19 +11,25 @@ import usersIcon from '../../assets/images/users.svg'
 class UserTools extends Component {
     render () {
         const usersClass = this.props.show ? "user-tools" : "hide-user-tools";
+        const buttonContent = (
+            <div className="users-icon-button" onClick={this.props.toggle}>
+                <img className="users-icon" src={usersIcon} alt="users-icon" />
+            </div>
+        );
         return (
             <Container className={usersClass} >
-                <Col>  
+                <Col className="users-main-content" >  
                     <UserNav />
                     <Switch>
-                        <Route path="/main/users" exact component={Users} />
+                        <Route path="/main/users" exact component={() => <Users users={this.props.users} show={this.props.show} />} />
                         <Route path="/main/friends" exact component={Friends} />
                     </Switch>
                 </Col>
                 <Col>
-                    <div className="users-icon-button" onClick={this.props.toggle}>
-                        <img className="users-icon" src={usersIcon} alt="users-icon" />
-                    </div>
+                    {this.props.show ? 
+                        <Link to="/main">{buttonContent}</Link> : 
+                        <Link to="/main/users">{buttonContent}</Link>
+                    }
                 </Col>
             </Container>
         );

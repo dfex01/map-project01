@@ -29,7 +29,7 @@ class MapView extends Component {
         addingMarker: false,
         alert: false,
         showingToolbar: false,
-        showingUsers: true
+        showingUsers: false
     }
 
      
@@ -64,7 +64,6 @@ class MapView extends Component {
         })
     }
     
-
     onMarkerClick = (props, marker, e) => {
         this.setState({ 
             activeMarker: marker, 
@@ -194,7 +193,6 @@ class MapView extends Component {
     }
 
     toggleUsersHandler = () => {
-        console.log('toggle');
         this.setState({ showingUsers: !this.state.showingUsers });
     }
 

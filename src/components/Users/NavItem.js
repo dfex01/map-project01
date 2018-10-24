@@ -5,7 +5,7 @@ import '../../assets/styles/user-tools.css'
 
 const NavItem = (props) => {
     return (
-        <NavLink to={props.link} className="user-nav-item">
+        <NavLink to={props.link} activeClassName="active" className="user-nav-item">
             {props.children}
         </NavLink>
     );
