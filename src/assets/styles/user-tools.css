@@ -7,7 +7,7 @@
     left: 0px;
     z-index: 10000;
     width: 280px;
-    top: 135px;
+    top: 120px;
     box-sizing: border-box;
     transition: all .8s ease-in-out;
     color: white;
@@ -24,10 +24,10 @@
 
 .hide-user-tools {
     position: fixed;
-    left: -280px;
+    left: -290px;
     z-index: 10000;
     width: 280px;
-    top: 135px;
+    top: 120px;
     box-sizing: border-box;
     transition: all .8s ease-in-out;
     color: white;

@@ -21,9 +21,12 @@ class MapView extends Component {
         user: {
             uid: 'null',
             name: 'Anonymous User',
-            image: 'https://img1.looper.com/img/uploads/2017/06/dumb-and-dumber-780x438_rev1.jpg'
+            image: 'https://img1.looper.com/img/uploads/2017/06/dumb-and-dumber-780x438_rev1.jpg',
+            friends: [],
+            visibleFriends: []
         },
         markers: [],
+        users: [],
         friendMarkers: [],
         editingMarker: false,
         addingMarker: false,
@@ -41,26 +44,40 @@ class MapView extends Component {
                 newUser.name = firebase.auth().currentUser.displayName;
                 newUser.image = firebase.auth().currentUser.photoURL;
                 this.setState({ user: newUser });
-            } 
+            
             firebase.database().ref('/users').once('value')
             .then(snapshot => {
+                let updatedUsers = [...this.state.users];
                 let updatedFriendMarkers = [...this.state.friendMarkers];
                 let updatedMarkers = [...this.state.markers]
+                let updatedUser = {...this.state.user}
+
                 for (let key in snapshot.val()) {
-                    if (key === this.state.user.uid) {
-                        snapshot.val()[key].markers.map(marker => {
-                            updatedMarkers.push(marker);
-                            return updatedMarkers;
-                        }) 
-                    } else {
-                        snapshot.val()[key].markers.map(marker => {
-                            updatedFriendMarkers.push(marker);
-                            return updatedFriendMarkers;
-                        })
-                    }
+                    updatedUsers.push(snapshot.val()[key]);
+                    if (snapshot.val()[key].markers) {
+                        if (key === this.state.user.uid) {
+
+                            if (snapshot.val()[key].friends) {
+                                updatedUser.friends = snapshot.val()[key].friends;
+                                updatedUser.visibleFriends = snapshot.val()[key].friends;
+                            }
+
+                            snapshot.val()[key].markers.map(marker => {
+                                updatedMarkers.push(marker);
+                                return updatedMarkers;
+                            }) 
+                        } 
+                   } 
                 }
-                this.setState({ markers: updatedMarkers, friendMarkers: updatedFriendMarkers });
-        });  
+                updatedUser.visibleFriends.map(friend => {
+                    friend.markers.map(marker => {
+                        updatedFriendMarkers.push(marker);
+                        return updatedFriendMarkers;
+                    })
+                    return updatedFriendMarkers;
+                })
+                this.setState({ markers: updatedMarkers, friendMarkers: updatedFriendMarkers, users: updatedUsers, user: updatedUser });
+        })};  
         })
     }
     
@@ -152,8 +169,7 @@ class MapView extends Component {
     }
 
     removeMarkerHandler = () => {
-        if (!this.state.showingInfoWindow) return this.giveAlert("You must select a marker to delete first");
-        
+        if (!this.state.showingInfoWindow) return this.giveAlert("You must select a marker to delete first"); 
         if (!this.state.activeMarker.editable) return this.giveAlert('You cannot remove your friends markers!');
         this.state.markers.map(marker => {
             if (marker.id === this.state.selectedPlace.id) {
@@ -164,6 +180,7 @@ class MapView extends Component {
                     markers: newMarkers,
                     showingInfoWindow: false,
                     editingMarker: false });
+                this.giveAlert(marker.name + ' has been removed.');
             } return null;
         });
     }
@@ -184,8 +201,10 @@ class MapView extends Component {
             id: this.state.user.uid,
             name: this.state.user.name,
             picture: this.state.user.image,
-            markers: this.state.markers
+            markers: this.state.markers,
+            friends: this.state.user.friends
         });
+        this.giveAlert('Markers saved.');
     }
 
     toggleToolbarHandler = () => {
@@ -194,6 +213,48 @@ class MapView extends Component {
 
     toggleUsersHandler = () => {
         this.setState({ showingUsers: !this.state.showingUsers });
+    }
+
+    addFriendHandler = (user) => {
+        let newUser = {...this.state.user};
+        if (newUser.friends.length === 0) {
+            newUser.friends.push(user);
+            firebase.database().ref('users/' + this.state.user.uid).set({
+                id: this.state.user.uid,
+                name: this.state.user.name,
+                picture: this.state.user.image,
+                markers: this.state.markers,
+                friends: newUser.friends
+            });
+            this.giveAlert('Added ' + user.name);
+        } else if (newUser.friends.every(friend => {return friend.id !== user.id})) {
+            newUser.friends.push(user);
+            firebase.database().ref('users/' + this.state.user.uid).set({
+                id: this.state.user.uid,
+                name: this.state.user.name,
+                picture: this.state.user.image,
+                markers: this.state.markers,
+                friends: newUser.friends
+            });
+            this.giveAlert('Added ' + user.name);
+        }   else {
+            this.giveAlert(user.name + ' is already your friend.');
+        }    
+        this.setState({ user: newUser });
+    }
+
+    deleteFriendHandler = (user) => {
+        let updatedUser = {...this.state.user}
+        updatedUser.friends = this.state.user.friends.filter(friend => friend.id !== user.id)
+        firebase.database().ref('users/' + this.state.user.uid).set({
+            id: this.state.user.uid,
+            name: this.state.user.name,
+            picture: this.state.user.image,
+            markers: this.state.markers,
+            friends: updatedUser.friends
+        });
+        this.setState({ user: updatedUser });
+        this.giveAlert('Removed ' + user.name + ' from friends.');
     }
 
     giveAlert = (text) => {
@@ -220,7 +281,7 @@ class MapView extends Component {
         }
     }
 
-    render() {  
+    render() {
         const markers = this.state.markers.map(mrkr => {
             return (
                 <Marker
@@ -283,8 +344,12 @@ class MapView extends Component {
                     editDescription={this.editDescriptionHandler}
                     remove={this.removeMarkerHandler}
                     keyPress={this.keyPressHandler} />
-                <UserTools 
+                <UserTools
+                    users={this.state.users}
+                    friends={this.state.user.friends} 
                     toggle={this.toggleUsersHandler}
+                    addFriend={this.addFriendHandler}
+                    deleteFriend={this.deleteFriendHandler}
                     show={this.state.showingUsers} />
                 <Map
                     styles={mapStyle} 
