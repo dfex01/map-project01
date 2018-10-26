@@ -48,32 +48,43 @@ class MapView extends Component {
             firebase.database().ref('/users').once('value')
             .then(snapshot => {
                 let updatedUsers = [...this.state.users];
-                let updatedFriendMarkers = [...this.state.friendMarkers];
+                let updatedFriendMarkers = [];
                 let updatedMarkers = [...this.state.markers]
                 let updatedUser = {...this.state.user}
-
+                //for each user in database
                 for (let key in snapshot.val()) {
+                    //add them to updatedUsers
                     updatedUsers.push(snapshot.val()[key]);
-                    if (snapshot.val()[key].markers) {
-                        if (key === this.state.user.uid) {
-
-                            if (snapshot.val()[key].friends) {
-                                updatedUser.friends = snapshot.val()[key].friends;
-                                updatedUser.visibleFriends = snapshot.val()[key].friends;
-                            }
-
+                    //if this is current user
+                    if (key === this.state.user.uid) {
+                        //if current user has visibleFriends and friends
+                        if (snapshot.val()[key].visibleFriends && snapshot.val()[key].friends) {
+                            //update lists
+                            updatedUser.friends = snapshot.val()[key].friends;
+                            updatedUser.visibleFriends = snapshot.val()[key].visibleFriends;
+                        //or if they just have friends and no visible friends set
+                        } else if (snapshot.val()[key].friends) {
+                            //copy friends to both lists
+                            updatedUser.friends = snapshot.val()[key].friends;
+                            updatedUser.visibleFriends = snapshot.val()[key].friends;
+                        }
+                        //if current user has markers
+                        if (snapshot.val()[key].markers) {
+                            //add all the users markers to the markers list
                             snapshot.val()[key].markers.map(marker => {
                                 updatedMarkers.push(marker);
                                 return updatedMarkers;
                             }) 
-                        } 
-                   } 
+                        }
+                    }    
                 }
                 updatedUser.visibleFriends.map(friend => {
-                    friend.markers.map(marker => {
-                        updatedFriendMarkers.push(marker);
-                        return updatedFriendMarkers;
-                    })
+                    if (friend.markers) {
+                        friend.markers.map(marker => {
+                            updatedFriendMarkers.push(marker);
+                            return updatedFriendMarkers;
+                        })
+                    }
                     return updatedFriendMarkers;
                 })
                 this.setState({ markers: updatedMarkers, friendMarkers: updatedFriendMarkers, users: updatedUsers, user: updatedUser });
@@ -217,43 +228,76 @@ class MapView extends Component {
 
     addFriendHandler = (user) => {
         let newUser = {...this.state.user};
+        newUser.friends = [...this.state.user.friends];
+        newUser.visibleFriends = [...this.state.user.visibleFriends];
+        if (newUser.uid === user.id){
+            this.giveAlert("You can't add yourself as a friend.");
+            return null;
+        }
         if (newUser.friends.length === 0) {
             newUser.friends.push(user);
+            newUser.visibleFriends.push(user);
             firebase.database().ref('users/' + this.state.user.uid).set({
                 id: this.state.user.uid,
                 name: this.state.user.name,
                 picture: this.state.user.image,
                 markers: this.state.markers,
-                friends: newUser.friends
+                friends: newUser.friends,
+                visibleFriends: newUser.visibleFriends
             });
             this.giveAlert('Added ' + user.name);
         } else if (newUser.friends.every(friend => {return friend.id !== user.id})) {
             newUser.friends.push(user);
+            newUser.visibleFriends.push(user);
             firebase.database().ref('users/' + this.state.user.uid).set({
                 id: this.state.user.uid,
                 name: this.state.user.name,
                 picture: this.state.user.image,
                 markers: this.state.markers,
-                friends: newUser.friends
+                friends: newUser.friends,
+                visibleFriends: newUser.visibleFriends
             });
             this.giveAlert('Added ' + user.name);
         }   else {
             this.giveAlert(user.name + ' is already your friend.');
-        }    
-        this.setState({ user: newUser });
+        } 
+
+        let updatedFriendMarkers = [];
+        newUser.visibleFriends.map(friend => {
+            if (friend.markers) {
+                friend.markers.map(marker => {
+                    updatedFriendMarkers.push(marker);
+                    return updatedFriendMarkers;
+                })
+            }
+            return updatedFriendMarkers;
+        })  
+        this.setState({ user: newUser, friendMarkers: updatedFriendMarkers });
     }
 
     deleteFriendHandler = (user) => {
         let updatedUser = {...this.state.user}
         updatedUser.friends = this.state.user.friends.filter(friend => friend.id !== user.id)
+        updatedUser.visibleFriends = this.state.user.visibleFriends.filter(friend => friend.id !== user.id)
         firebase.database().ref('users/' + this.state.user.uid).set({
             id: this.state.user.uid,
             name: this.state.user.name,
             picture: this.state.user.image,
             markers: this.state.markers,
-            friends: updatedUser.friends
+            friends: updatedUser.friends,
+            visibleFriends: updatedUser.visibleFriends
         });
-        this.setState({ user: updatedUser });
+        let updatedFriendMarkers = [];
+        updatedUser.visibleFriends.map(friend => {
+            if (friend.markers) {
+                friend.markers.map(marker => {
+                    updatedFriendMarkers.push(marker);
+                    return updatedFriendMarkers;
+                })
+            }
+            return updatedFriendMarkers;
+        })
+        this.setState({ user: updatedUser, friendMarkers: updatedFriendMarkers });
         this.giveAlert('Removed ' + user.name + ' from friends.');
     }
 
