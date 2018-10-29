@@ -97,7 +97,7 @@
 }
 
 .user-card {
-    width: 220px;
+    width: 240px;
     height: 50px;
     background-color: #8ec3b9;
     border: 2px solid white;
@@ -121,6 +121,12 @@
 }
 
 .add-friend-icon {
-    width: 30px;
+    width: 25px;
+    cursor: pointer;
+}
+
+.visible-icon {
+    padding: 10px;
+    width: 25px;
     cursor: pointer;
 }
