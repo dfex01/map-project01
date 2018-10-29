@@ -23,7 +23,7 @@ class UserTools extends Component {
                     <UserNav />
                     <Switch>
                         <Route path="/main/users" exact component={() => <Users users={this.props.users} click={this.props.addFriend}/>} />
-                        <Route path="/main/friends" exact component={() => <Friends friends={this.props.friends} click={this.props.deleteFriend} />} />
+                        <Route path="/main/friends" exact component={() => <Friends friends={this.props.friends} deleteFriend={this.props.deleteFriend} toggleVisibility={this.props.toggleVisibility} />} />
                     </Switch>
                 </Col>
                 <Col>

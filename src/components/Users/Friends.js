@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 
-import deleteFriendIcon from '../../assets/images/delete-friend.svg'
+import deleteFriendIcon from '../../assets/images/delete-friend.svg';
+import visible from '../../assets/images/eye.svg';
+import hiding from '../../assets/images/eye-slash.svg';
 
 class Friends extends Component {
+   
     render() {
         return (
             <div>
@@ -16,7 +19,12 @@ class Friends extends Component {
                                 src={deleteFriendIcon} 
                                 alt="delete friend icon" 
                                 className="add-friend-icon"
-                                onClick={() => this.props.click(user)} />
+                                onClick={() => this.props.deleteFriend(user)} />
+                            <img 
+                                src={user.isShowing ? visible : hiding}
+                                alt={user.isShowing ? 'user is visible' : 'user is hidden'}
+                                className="visible-icon" 
+                                onClick={() => this.props.toggleVisibility(user)} />
                         </div>
                     );
                 })}
